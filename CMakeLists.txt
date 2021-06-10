@@ -7,7 +7,7 @@ project(fly_bot_cpp)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS
+find_package(catkin gazebo REQUIRED COMPONENTS
   roscpp
   std_msgs
   geometry_msgs
@@ -50,11 +50,13 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
+add_message_files(
+  FILES
+  kwad_input.msg
+  kwad_state.msg
 #   Message1.msg
 #   Message2.msg
-# )
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -71,10 +73,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -122,12 +124,20 @@ include_directories(
  include
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
+  ${roscpp_INCLUDE_DIRS}
+  ${GAZEBO_INCLUDE_DIRS}
 )
 
+link_directories(
+  ${GAZEBO_LIBRARY_DIRS}
+)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GAZEBO_CXX_FLAGS}")
+
 ## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/fly_bot_cpp.cpp
-# )
+add_library(
+  KwadControlPlugin SHARED plugin/pluto_plugin.cc
+)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -154,7 +164,10 @@ add_executable(kwad src/kwad.cpp)
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(kwad ${catkin_LIBRARIES})
+target_link_libraries(
+  kwad ${catkin_LIBRARIES}
+  KwadControlPlugin ${GAZEBO_LIBRARIES} ${roscpp_LIBRARIES}
+)
 
 #############
 ## Install ##

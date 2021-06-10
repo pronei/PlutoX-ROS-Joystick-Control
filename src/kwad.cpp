@@ -41,7 +41,7 @@ float r_error, r_error_sum;
 float w1, w2, w3, w4;
 //##########################################################################################################################################
 bool flag = 0;
-bool pos_hold_flag = 0;
+bool pos_hold_flag = 1;
 
 #define Ts 0.01
 #define g 9.81
@@ -128,12 +128,12 @@ bool pos_hold_flag = 0;
 #define R2D 57.295779513
 #define D2R 0.017453293
 
-float x_des = 1.0;
-float y_des = 1.0;
-float z_des = 1.0;
+float x_des = 2.0;
+float y_des = 2.0;
+float z_des = 4.0;
 float phi_des = 0.0;
 float theta_des = 0.0;
-float psi_des = 0.0;
+float psi_des = 0;
 float u1 = 13.734;
 
 auto t2 = chrono::high_resolution_clock::now();
@@ -373,6 +373,13 @@ void quad_motor_speed()
 	u2 = kt*l*(w4 - w2);
 	u3 = kt*l*(w1 - w3);
 	u4 = kd*(w1 + w3 - w2 - w4);
+
+	cout << "_________________________________________" << endl;
+	cout << "u1: " << u1 << endl;
+	cout << "u2: " << u2 << endl;
+	cout << "u3: " << u3 << endl;
+	cout << "u4: " << u4 << endl;
+	cout << "_________________________________________" << endl;
 	
 	o = o1 - o2 + o3 - o4;
 }
@@ -451,6 +458,7 @@ void sensor_meas(const sensor_msgs::Imu::ConstPtr& msg1)
 	//std::cout << x_ddot << '\n';
 }
 //###########################################################################################################################################
+/*
 void JoyData(const sensor_msgs::Joy::ConstPtr& msg3)
 {
 	if(pos_hold_flag == 0){
@@ -462,18 +470,22 @@ void JoyData(const sensor_msgs::Joy::ConstPtr& msg3)
 	pos_hold_flag -= msg3->buttons[5];
 	//cout << pos_hold_flag << '\n';
 }
+*/
 //###########################################################################################################################################
 int main(int argc, char **argv)
 {
 	ros::init(argc, argv, "Control");
 	ros::NodeHandle nodeObj;
 	
+	x_des = atof(argv[1]);
+	y_des = atof(argv[2]);
+	z_des = atof(argv[3]);
 	velPub = nodeObj.advertise<std_msgs::Float64MultiArray>("/Kwad/joint_motor_controller/command", 40);
 	stateClient = nodeObj.serviceClient<gazebo_msgs::SetModelState>("/gazebo/set_model_state", 1000);
 	//ros::Subscriber PoseSub = nodeObj.subscribe("/gazebo/model_states", 10, control_kwad);
 	ros::Subscriber ImuSub = nodeObj.subscribe("/Kwad/imu", 10, sensor_meas);
 	ros::Subscriber posSub = nodeObj.subscribe("/gazebo/model_states", 10, control_kwad);
-	ros::Subscriber joyData = nodeObj.subscribe("/Kwad/joy", 10, JoyData);
+	//ros::Subscriber joyData = nodeObj.subscribe("/Kwad/joy", 10, JoyData);
 	
 	ros::spin();
 	
