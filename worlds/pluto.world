@@ -21,9 +21,17 @@
 		<include>
 			<uri>model://vrc_heightmap_1</uri>
 		</include>
-        
-        
-        <gui>
+
+		<!--
+		<model name="Kwad">
+			<include>
+				<uri>model://pluto_x</uri>
+			</include>
+			<plugin name="kwad_control" filename="libKwadControlPlugin.so" />
+		</model>
+		-->
+
+		<gui>
 			<camera name="user_camera">
 				<pose>-1 0 1 0 0 0</pose>
 				<track_visual>

@@ -1,0 +1,8 @@
+	<!-- <rosparam file="$(find fly_bot_cpp)/config/pluto_control.yaml" command="load" ns="/Kwad" />
+	
+	<node name="control_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="--namespace=/Kwad joint_state_controller joint_motor_controller" />
+	
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
+	<param name="publish_frequency" type="double" value="5.0" />
+	</node>
+<node name="Joystick" pkg="joy" type="joy_node" /> -->

@@ -9,11 +9,5 @@
 		<arg name="debug" default="true" />
 	</include>
 
-    <group ns="Kwad">
-    
-        <param name="robot_description" command="$(find xacro)xacro '$(find fly_bot_cpp)/urdf/pluto.xacro'" />
-		
-	    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-param robot_description -urdf -model Kwad" />
-	    
-    </group>
 </launch>
+

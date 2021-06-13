@@ -11,7 +11,11 @@
 #include <ignition/math/Vector3.hh>
 #include <ignition/math/Quaternion.hh>
 #include "geometry_msgs/Pose.h"
+#include "sensor_msgs/Imu.h"
+#include "fly_bot_cpp/kwad_input.h"
+#include "fly_bot_cpp/kwad_state.h"
 #include <functional>
+#include <iostream>
 #include <map>
 
 namespace gazebo{
@@ -37,8 +41,9 @@ namespace gazebo{
                           ros::init_options::NoSigintHandler);
             }
 
+            std::cout << "line 44" << std::endl;
             this->rosNode.reset(new ros::NodeHandle());
-
+            std::cout << "line 46" << std::endl;
             // create a topic for control inputs and subscribe to it
             this->controlSub = this->rosNode->subscribe(
                 this->model->GetName() + "/control_cmd",
@@ -46,6 +51,7 @@ namespace gazebo{
                 &KwadControlPlugin::controlCallback,
                 this);
             
+            std::cout << "line 54" << std::endl;
             // create a subscriber for IMU sensor
             this->imuSub = 
                 this->rosNode->subscribe(
@@ -53,11 +59,12 @@ namespace gazebo{
                     10,
                     &KwadControlPlugin::imuCallback,
                     this);
-
+            std::cout << "line 62" << std::endl;
             // create topic for 12 states of kwad and advertise
             this->statePub = this->rosNode->advertise<fly_bot_cpp::kwad_state>(
                 this->model->GetName() + "/twelve_state", 10);
 
+            std::cout << "line 67" << std::endl;
             /* namespace created by sdf?
             if (!sdf_->HasElement("robotNamespace")) {
                 ROS_FATAL_STREAM("Missing parameter <namespace> in plugin");
@@ -66,21 +73,20 @@ namespace gazebo{
                 pluginNamespace = _sdf->GetElement("robotNamespace")->GetValue->GetAsString();
             }
             */
-
+            std::cout << "line 76" << std::endl;
             this->updateConnection = event::Events::ConnectWorldUpdateBegin(
                 std::bind(&KwadControlPlugin::OnUpdate, this));
             
             ROS_INFO("KwadControlPlugin loaded\n");
-
         }
 
         private: void OnUpdate()
         {
             if (this->controlSub.getNumPublishers() < 1) {
-                controlMsg.thrust = 0;
-                controlMsg.tau_x = 0;
-                controlMsg.tau_y = 0;
-                controlMsg.tau_z = 0;
+                this->controlMsg.thrust = 0;
+                this->controlMsg.tau_x = 0;
+                this->controlMsg.tau_y = 0;
+                this->controlMsg.tau_z = 0;
             }
             if (this->imuSub.getNumPublishers() < 1) {
                 /*
@@ -100,31 +106,32 @@ namespace gazebo{
             }
 
             // apply forces and torques to body link
-            this->body->SetForce(
-                control_force.Set(0, 0, controlMsg.thrust));
-            this->body->SetTorque(
-                control_torque.Set(controlMsg.tau_x,
-                                   controlMsg.tau_y
-                                   controlMsg.tau_z));
+            this->control_force.Set(0, 0, this->controlMsg.thrust);
+            this->body->SetForce(this->control_force);
+            
+            this->control_torque.Set(this->controlMsg.tau_x, 
+                               this->controlMsg.tau_y,
+                               this->controlMsg.tau_z);
+            this->body->SetTorque(this->control_torque);
             
             // make state vector and publish to Kwad/twelve_state topic
             this->pose = this->body->WorldPose();
             this->lin_vel = this->body->WorldLinearVel();
 
-            this->stateMsg.x = pose.X();
-            this->stateMsg.y = pose.Y();
-            this->stateMsg.z = pose.Z();
-            this->stateMsg.x_dot = lin_vel.X();
-            this->stateMsg.y_dot = lin_vel.Y();
-            this->stateMsg.z_dot = lin_vel.Z();
-            this->stateMsg.phi = this.q.Roll();
-            this->stateMsg.theta = this.q.Pitch();
-            this->stateMSg.psi = this.q.Yaw();
+            this->stateMsg.x = this->pose.Pos().X();
+            this->stateMsg.y = this->pose.Pos().Y();
+            this->stateMsg.z = this->pose.Pos().Z();
+            this->stateMsg.x_dot = this->lin_vel.X();
+            this->stateMsg.y_dot = this->lin_vel.Y();
+            this->stateMsg.z_dot = this->lin_vel.Z();
+            this->stateMsg.phi = this->q.Roll();
+            this->stateMsg.theta = this->q.Pitch();
+            this->stateMsg.psi = this->q.Yaw();
             this->stateMsg.p = this->ang_vel[0];
             this->stateMsg.q = this->ang_vel[1];
             this->stateMsg.r = this->ang_vel[2];
 
-            statePub.publish(stateMsg);
+            this->statePub.publish(this->stateMsg);
 
             return;
         }
@@ -135,6 +142,7 @@ namespace gazebo{
             this->controlMsg.tau_x = msg->tau_x;
             this->controlMsg.tau_y = msg->tau_y;
             this->controlMsg.tau_z = msg->tau_z;
+            std::cout << '\n' << "Value of thrust being received by callback: " << msg->thrust << '\n';
         }
 
         private: void imuCallback(const sensor_msgs::Imu::ConstPtr& msg)
@@ -178,8 +186,9 @@ namespace gazebo{
         
         private: event::ConnectionPtr updateConnection;
 
-        GZ_REGISTER_MODEL_PLUGIN(KwadControlPlugin)
-    }
+    };
+
+    GZ_REGISTER_MODEL_PLUGIN(KwadControlPlugin)
 }
 
 #endif

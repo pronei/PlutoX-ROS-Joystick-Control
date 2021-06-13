@@ -7,8 +7,9 @@ project(fly_bot_cpp)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin gazebo REQUIRED COMPONENTS
+find_package(catkin REQUIRED COMPONENTS
   roscpp
+  gazebo
   std_msgs
   geometry_msgs
   tf

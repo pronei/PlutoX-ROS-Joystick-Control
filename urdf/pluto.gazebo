@@ -98,9 +98,8 @@
 			<robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
 		</plugin> -->
 
-		
-		<plugin name="kwad_control" filename="libpluto_plugin.so">
-			<robotNamespace>/Kwad</robotNamespace>
+		<plugin name="kwad_control" filename="libKwadControlPlugin.so">
+			<robotNamespace>Kwad</robotNamespace>
 		</plugin>
 		
 	</gazebo>
