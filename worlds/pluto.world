@@ -13,6 +13,7 @@
 			<uri>model://sun</uri>
 		</include>
 		
+		
 		<include>
 			<uri>model://construction_cone</uri>
 			<pose>3 0 0 0 0 0</pose>
@@ -31,7 +32,7 @@
 		</model>
 		-->
 
-		<gui>
+		<!-- <gui>
 			<camera name="user_camera">
 				<pose>-1 0 1 0 0 0</pose>
 				<track_visual>
@@ -41,7 +42,7 @@
 					<inherit_yaw>true</inherit_yaw>
 				</track_visual>
 			</camera>
-		</gui>
+		</gui> -->
 		
 	</world>
 </sdf>

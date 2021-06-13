@@ -93,11 +93,12 @@
 
 	<gazebo>
 
-		<!-- <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+		
+		<plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
 			<robotNameSpace>/Kwad</robotNameSpace>
 			<robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
-		</plugin> -->
-
+		</plugin>
+		
 		<plugin name="kwad_control" filename="libKwadControlPlugin.so">
 			<robotNamespace>Kwad</robotNamespace>
 		</plugin>

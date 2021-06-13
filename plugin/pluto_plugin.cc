@@ -1,6 +1,3 @@
-#ifndef _KWAD_PLUGIN_HH
-#define _KWAD_PLUGIN_HH
-
 #include <gazebo/gazebo.hh>
 #include <gazebo/physics/Model.hh>
 #include <gazebo/physics/PhysicsTypes.hh>
@@ -27,7 +24,13 @@ namespace gazebo{
         public: void Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
         {
             this->model = _model;
-            this->body = this->model->GetLink("body");
+            this->body = _model->GetChildLink("body");
+            std::cout << "number of joints in model: " << this->model->GetJointCount() << std::endl;
+               
+            if (_model->GetJointCount() == 0) {
+                std::cerr << "model not loaded" << std::endl;
+                return;
+            }
 
             if (!ros::isInitialized()) {
                 ROS_WARN("A ROS node for Gazebo has not been initialized, unable to load plugin.");
@@ -83,7 +86,7 @@ namespace gazebo{
         private: void OnUpdate()
         {
             if (this->controlSub.getNumPublishers() < 1) {
-                this->controlMsg.thrust = 0;
+                this->controlMsg.thrust = 10;
                 this->controlMsg.tau_x = 0;
                 this->controlMsg.tau_y = 0;
                 this->controlMsg.tau_z = 0;
@@ -107,6 +110,7 @@ namespace gazebo{
 
             // apply forces and torques to body link
             this->control_force.Set(0, 0, this->controlMsg.thrust);
+
             this->body->SetForce(this->control_force);
             
             this->control_torque.Set(this->controlMsg.tau_x, 
@@ -142,7 +146,6 @@ namespace gazebo{
             this->controlMsg.tau_x = msg->tau_x;
             this->controlMsg.tau_y = msg->tau_y;
             this->controlMsg.tau_z = msg->tau_z;
-            std::cout << '\n' << "Value of thrust being received by callback: " << msg->thrust << '\n';
         }
 
         private: void imuCallback(const sensor_msgs::Imu::ConstPtr& msg)
@@ -190,5 +193,3 @@ namespace gazebo{
 
     GZ_REGISTER_MODEL_PLUGIN(KwadControlPlugin)
 }
-
-#endif
