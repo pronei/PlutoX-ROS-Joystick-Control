@@ -6,22 +6,25 @@
 		</scene>
 	
 		<include>
+			<uri>model://ground_plane</uri>
+		</include>
+		<!-- <include>
 			<uri>model://grass_plane</uri>
 		</include>
-		
+		 -->
 		<include>
 			<uri>model://sun</uri>
 		</include>
 		
 		
-		<include>
+		<!-- <include>
 			<uri>model://construction_cone</uri>
 			<pose>3 0 0 0 0 0</pose>
-		</include>
+		</include> -->
 		
-		<include>
+		<!-- <include>
 			<uri>model://vrc_heightmap_1</uri>
-		</include>
+		</include> -->
 
 		<!--
 		<model name="Kwad">
